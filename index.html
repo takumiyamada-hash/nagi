@@ -362,7 +362,7 @@ button,select,input,textarea{font:inherit;color:inherit}
         <div class="card pad" style="font-size:12.5px;line-height:1.9">実測風速計・ライブカメラの接続 / 波の周期（うねりの質）の評価 / 混雑の反映 / 現地設備情報の全数実地検証。できたものから順次この欄を更新する。</div>
       </div>
     </div>
-    <div class="windy" id="windy">
+    <div class="windy" id="wfull">
       <div class="whead"><b>風の詳細 ― Windy</b><span style="display:flex;gap:10px;align-items:center"><u id="windyExt" style="font-size:11px;color:rgba(244,247,249,.7);cursor:pointer">別画面で開く</u><button class="wclose" id="windyClose">閉じる</button></span></div>
       <iframe id="windyFrame" src="" title="Windy" loading="lazy" allow="fullscreen"></iframe>
       <div class="wsrc">POWERED BY WINDY.COM（公式埋め込み）</div>
@@ -601,7 +601,7 @@ function renderWind(){
 function openWindy(lat,lng){
  const f=document.getElementById('windyFrame');
  f.src='https://embed.windy.com/embed2.html?lat='+lat+'&lon='+lng+'&detailLat='+lat+'&detailLon='+lng+'&zoom=9&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&metricWind=m%2Fs&metricTemp=%C2%B0C';
- document.getElementById('windy').classList.add('open');
+ document.getElementById('wfull').classList.add('open');
 }
 document.getElementById('windyExt').onclick=()=>{
  const f=document.getElementById('windyFrame');
@@ -609,7 +609,7 @@ document.getElementById('windyExt').onclick=()=>{
  if(m)window.open('https://www.windy.com/?'+windyTs()+','+m[1]+','+m[2]+',10','_blank');
 };
 document.getElementById('windyClose').onclick=()=>{
- document.getElementById('windy').classList.remove('open');
+ document.getElementById('wfull').classList.remove('open');
  document.getElementById('windyFrame').src='';
 };
 function renderPins(){
@@ -893,7 +893,7 @@ document.querySelectorAll('.tab').forEach(t=>{
   document.getElementById('sc-'+t.dataset.tab).classList.add('act');
   document.getElementById('detail').classList.remove('open');
   document.getElementById('method').classList.remove('open');
-  document.getElementById('windy').classList.remove('open');
+  document.getElementById('wfull').classList.remove('open');
   composer.classList.remove('open');
   if(t.dataset.tab==='today'&&map)setTimeout(()=>map.invalidateSize(),60);
  };});
