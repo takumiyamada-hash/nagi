@@ -179,6 +179,23 @@ button,select,input,textarea{font:inherit;color:inherit}
 .catchrow b{font-weight:700}
 .catchrow span{font-size:10.5px;color:var(--mut)}
 .leaflet-container{font-family:inherit}
+
+/* ===== opening: the line becomes calm ===== */
+.splash{position:absolute;inset:0;z-index:100;background:#0F1B24;overflow:hidden;transition:transform .65s cubic-bezier(.7,0,.18,1)}
+.splash.out{transform:translateY(-102%)}
+.splash canvas{position:absolute;inset:0;width:100%;height:100%}
+.stop{position:absolute;left:0;right:0;top:30%;text-align:center}
+.slogo{display:inline-flex;font-weight:800;font-size:46px;letter-spacing:-.02em;color:#F4F7F9;line-height:1}
+.sl{opacity:0;transform:translateY(26px);animation:slUp .7s cubic-bezier(.16,1,.3,1) forwards}
+.sl:nth-child(1){animation-delay:.25s}.sl:nth-child(2){animation-delay:.33s}.sl:nth-child(3){animation-delay:.41s}.sl:nth-child(4){animation-delay:.49s}
+.sp2{color:#4BA3D9;opacity:0;transform:scale(.2) translateY(6px);animation:spIn .5s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:.95s}
+.sbot{position:absolute;left:0;right:0;top:63%;text-align:center}
+.stag{color:rgba(244,247,249,.92);font-size:13px;font-weight:600;opacity:0;animation:fadeUp .8s ease forwards;animation-delay:1.3s}
+.ssub{color:rgba(244,247,249,.4);font-size:9px;letter-spacing:.2em;margin-top:9px;opacity:0;animation:fadeUp .8s ease forwards;animation-delay:1.55s}
+@keyframes slUp{to{opacity:1;transform:none}}
+@keyframes spIn{to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.sl,.sp2,.stag,.ssub{animation:none;opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -190,6 +207,11 @@ button,select,input,textarea{font:inherit;color:inherit}
 ]}</script>
 
 <div class="phone">
+<div class="splash" id="splash">
+ <canvas id="splashC"></canvas>
+ <div class="stop"><div class="slogo"><span class="sl">N</span><span class="sl">A</span><span class="sl">G</span><span class="sl">I</span><span class="sp2">.</span></div></div>
+ <div class="sbot"><div class="stag">今日、どこで浮かべる？</div><div class="ssub">KANTO ・ OPEN-METEO</div></div>
+</div>
   <div class="appbar">
     <div class="logo">NAGI<i>.</i></div>
     <div class="stat" id="hstat">KANTO<br>データ取得中…</div>
@@ -696,6 +718,44 @@ document.querySelectorAll('.tab').forEach(t=>{
 /* init */
 renderList();renderSpots();renderProfile();renderPosts();renderPerks();
 if(map)setTimeout(()=>map.invalidateSize(),300);
+
+/* ===== opening motion: a rough line settles into calm (nagi) ===== */
+(function(){
+ const sp=document.getElementById('splash');
+ if(!sp)return;
+ let skip=false;
+ try{if(sessionStorage.getItem('nagi-splashed'))skip=true}catch(e){}
+ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)skip=true;
+ if(skip){sp.remove();return}
+ try{sessionStorage.setItem('nagi-splashed','1')}catch(e){}
+ const c=document.getElementById('splashC'),x=c.getContext('2d');
+ const dpr=window.devicePixelRatio||1;
+ c.width=sp.clientWidth*dpr;c.height=sp.clientHeight*dpr;
+ const T=1500,t0=performance.now();
+ function draw(now){
+  if(sp.dataset.done)return;
+  const t=now-t0,pr=Math.min(1,t/T);
+  const amp=18*Math.pow(1-pr,2.2)*dpr;
+  x.clearRect(0,0,c.width,c.height);
+  x.beginPath();
+  const y0=c.height*0.56;
+  for(let i=0;i<=c.width;i+=4*dpr){
+   const y=y0+Math.sin(i/(56*dpr)+t/230)*amp+Math.sin(i/(23*dpr)-t/170)*amp*0.5;
+   i===0?x.moveTo(i,y):x.lineTo(i,y);
+  }
+  x.strokeStyle='rgba(244,247,249,0.85)';x.lineWidth=1.5*dpr;x.stroke();
+  requestAnimationFrame(draw);
+ }
+ requestAnimationFrame(draw);
+ const exit=()=>{
+  if(sp.dataset.done)return;sp.dataset.done=1;
+  sp.classList.add('out');
+  setTimeout(()=>{sp.remove();if(typeof map!=='undefined'&&map)map.invalidateSize()},700);
+ };
+ if(location.hash!=='#hold')setTimeout(exit,2150);
+ sp.addEventListener('click',exit);
+})();
+
 fetchLive().then(()=>{renderList();renderPins();renderSpots()})
  .catch(()=>{useSnapshot();renderList();renderPins();renderSpots()});
 </script>
