@@ -275,7 +275,7 @@ button,select,input,textarea{font:inherit;color:inherit}
 
     <section class="screen act" id="sc-home">
       <div class="scroll">
-        <div class="shead"><h2>ホーム</h2><p>あなたの海の、いまとこれから。</p></div>
+        <div class="shead"><h2 id="homeGreet">ようこそ、NAGIへ。</h2><p id="homeGreetSub">あなたの海の、いまとこれから。</p></div>
         <div class="profile" id="profileBox"></div>
         <div class="shead" style="padding-top:0"><h2 style="font-size:15px">今日のお気に入り</h2></div>
         <div class="slist" id="homeFavs"></div>
@@ -707,6 +707,8 @@ function myCount(){try{return parseInt(localStorage.getItem('nagi-mycount')||'0'
 function renderProfile(){
  const box=document.getElementById('profileBox');
  const p=getProfile();
+ const g=document.getElementById('homeGreet');
+ if(g)g.textContent=p?('おかえりなさい、'+p.name+'さん。'):'ようこそ、NAGIへ。';
  if(!p){
   box.innerHTML='<div class="card pf"><div class="top"><span class="nm2">ホームの海を決めよう</span></div>'+
    '<p style="font-size:11.5px;color:var(--mut);margin-top:4px">出艇を記録するとランクが上がり、ホームのページにあなたの名前が刻まれます。</p>'+
