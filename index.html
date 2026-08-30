@@ -174,7 +174,8 @@ button,select,input,textarea{font:inherit;color:inherit}
 .dsrc{font-size:10px;color:var(--mut);line-height:1.8;margin-top:8px;padding:0 4px}
 .verif{border-left:3px solid var(--accent);padding:2px 0 2px 12px;font-size:11.5px;line-height:1.8;color:var(--mut);margin:0 4px}
 .verif b{color:var(--ink)}
-.dbtn{display:block;width:100%;text-align:center;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px;font-size:13px;font-weight:700;margin-top:18px;cursor:pointer}
+.dfoot{flex:0 0 auto;padding:10px 16px calc(14px + env(safe-area-inset-bottom,0px));background:var(--ground);border-top:1px solid var(--line)}
+.dbtn{display:block;width:100%;text-align:center;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px;font-size:13px;font-weight:700;cursor:pointer}
 .catchrow{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px}
 .catchrow:last-child{border-bottom:0}
 .catchrow b{font-weight:700}
@@ -289,6 +290,7 @@ button,select,input,textarea{font:inherit;color:inherit}
       <div class="dphoto"><img id="dimg" src="" alt=""><button class="dclose" id="dclose">← 戻る</button>
         <div class="dscore"><span class="n num" id="dnum"></span><span class="w" id="dword"></span></div></div>
       <div class="dbody" id="dbody"></div>
+      <div class="dfoot"><button class="dbtn" id="dnav">駐車場へのルートを開く（Googleマップ）</button></div>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -705,19 +707,19 @@ function openDetail(s){
   '<div style="margin:14px 0" class="verif"><b>現地確認済み</b><br>'+s.verif+'</div>'+
   catchHtml+localsHtml+
   (posts.length?'<div class="dsec">この場所の記録</div>':'')+
-  '<div id="dposts"></div>'+
-  '<button class="dbtn" id="dnav">駐車場へのルートを開く（Googleマップ）</button>';
+  '<div id="dposts"></div>';
+ window.curSpot=s;
  const dp=document.getElementById('dposts');
  posts.slice(0,3).forEach(p=>dp.appendChild(postCard(p,false)));
- const nav=document.getElementById('dnav');
- if(nav)nav.onclick=()=>{
-  const q=encodeURIComponent(s.pname||s.name+' 駐車場');
-  window.open('https://www.google.com/maps/dir/?api=1&destination='+q+'&travelmode=driving','_blank');
- };
  document.getElementById('detail').classList.add('open');
  document.querySelector('.dbody').scrollTop=0;
 }
 document.getElementById('dclose').onclick=()=>document.getElementById('detail').classList.remove('open');
+document.getElementById('dnav').onclick=()=>{
+ const s=window.curSpot; if(!s)return;
+ const q=encodeURIComponent(s.pname||s.name+' 駐車場');
+ window.open('https://www.google.com/maps/dir/?api=1&destination='+q+'&travelmode=driving','_blank');
+};
 
 /* tabs */
 document.querySelectorAll('.tab').forEach(t=>{
